@@ -10,8 +10,10 @@ Learning to build network applications and a Mini-Redis clone using C, based on 
 ├── lib/
 │   └── network_lib.h  # Shared headers and helper functions
 └── Src/
-    ├── server.c       # Concurrent TCP Server
+    ├── server.c       # TCP Server (Concurrent)
     ├── client.c       # TCP Client
+    ├── listener.c     # UDP Server (Receiver)
+    ├── talker.c       # UDP Client (Sender)
     └── showip.c       # DNS/IP Resolution Tool
 ```
 ## How to compile
