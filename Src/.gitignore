@@ -3,6 +3,8 @@
 *.obj
 
 # Compiled Binary files
+listener
+talker
 server
 client
 showip
