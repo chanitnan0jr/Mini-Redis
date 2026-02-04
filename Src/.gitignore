@@ -1,0 +1,14 @@
+# Compiled Object files
+*.o
+*.obj
+
+# Compiled Binary files
+server
+client
+showip
+a.out
+*.exe
+
+# OS generated files
+.DS_Store
+Thumbs.db
