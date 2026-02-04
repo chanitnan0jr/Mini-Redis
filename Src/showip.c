@@ -1,11 +1,4 @@
-#include <stdio.h>
-#include <string.h>
-#include <sys/types.h>
-#include <sys/socket.h>
-#include <netdb.h>
-#include <arpa/inet.h>
-#include <netinet/in.h>
-
+#include "network_lib.h"
 /*this file contains code to lookup and display the all IP addresses for a given hostname
 usage: ./showip hostname
 example: ./showip www.google.com
