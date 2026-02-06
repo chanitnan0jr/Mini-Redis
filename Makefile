@@ -1,10 +1,11 @@
 # 1. set up compiler and flags
 CC = gcc
-CFLAGS = -Wall -I./lib  # -I./lib tells the compiler to look for header files in the 'lib' directory
+CFLAGS = -Wall -I./lib 
 
 # 2. tell make where the source files are and what the targets are
 SRC_DIR = Src
-TARGETS = server client showip listener talker
+
+TARGETS = server client showip listener talker pollserver
 
 # 3. Default target
 all: $(TARGETS)
@@ -25,6 +26,9 @@ talker: $(SRC_DIR)/talker.c
 showip: $(SRC_DIR)/showip.c
 	$(CC) $(CFLAGS) $(SRC_DIR)/showip.c -o $(SRC_DIR)/showip
 
+pollserver: $(SRC_DIR)/pollserver.c
+	$(CC) $(CFLAGS) $(SRC_DIR)/pollserver.c -o $(SRC_DIR)/pollserver
+
 # 5. clean up compiled files
 clean:
-	rm -f $(SRC_DIR)/server $(SRC_DIR)/client $(SRC_DIR)/showip
+	rm -f $(SRC_DIR)/server $(SRC_DIR)/client $(SRC_DIR)/showip $(SRC_DIR)/listener $(SRC_DIR)/talker $(SRC_DIR)/pollserver
