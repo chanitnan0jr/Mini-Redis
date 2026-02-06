@@ -102,8 +102,10 @@ You can use telnet or netcat to simulate multiple users:
 telnet localhost 9034
 ```
 or 
+
 ```bash
 nc localhost 9034
+```
 Then you can try type in the terminal
 ```bash
 Sinu: Networking is cool!
@@ -121,10 +123,13 @@ Sinu: Networking is cool!
 
 #### And if you wonder wWhy does my client start at Socket 4?
 In Unix-like systems, every new process starts with three default File Descriptors (FD):
+
     0 (stdin): Keyboard input.
     1 (stdout): Standard output to screen.
     2 (stderr): Error output to screen.
+
 When our server runs:
+
     FD 3 is assigned to the Listener Socket (the "Front Door").
     FD 4 is assigned to the First Client that connects.
     Subsequent clients will be assigned FD 5, 6, and so on.
