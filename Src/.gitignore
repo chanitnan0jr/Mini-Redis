@@ -8,6 +8,8 @@ talker
 server
 client
 showip
+pollserver
+selectserver
 a.out
 *.exe
 

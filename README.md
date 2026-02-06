@@ -10,12 +10,12 @@ Learning to build network applications and a Mini-Redis clone using C, based on 
 ├── lib/
 │   └── network_lib.h  # Shared headers and helper functions
 └── Src/
-    ├── server.c       # TCP Server (Concurrent)
+    ├── server.c       # TCP Server (Concurrent via fork)
     ├── client.c       # TCP Client
     ├── listener.c     # UDP Server (Receiver)
     ├── talker.c       # UDP Client (Sender)
-    └── showip.c       # DNS/IP Resolution Tool
-    └── pollserver.c   # TCP Chat Server (I/O Multiplexing using poll())
+    ├── showip.c       # DNS/IP Resolution Tool
+    └── selectserver.c # TCP Chat Server (Multiplexing via select)
 ```
 ## How to compile
 ```bash 
@@ -66,7 +66,7 @@ Hello from Sinu Server
 listener: got packet from 127.0.0.1
 listener: packet is 36 bytes long
 listener: packet contains 
-"Hello UDP server it's Sinu talker.c"
+"Hello UDP server it's Sinu from talker.c"
 ```
 
 ### 3. IP Lookup Tool (ShowIP)
@@ -80,29 +80,43 @@ Resolve a hostname to IP addresses.
 
 ## Next (Chapter 7 - Slightly Advanced Techniques)
 
-### 4. Chat Server with poll()
-- Properties: Uses I/O Multiplexing to manage multiple clients within a single process.
+### 4&5. Chat Server with poll() and select()
+Both implementations achieve the same goal using different internal mechanisms.
 
-- Efficiency: Unlike fork(), it uses poll() to monitor an array of file descriptors. The process "sleeps" and consumes zero CPU cycles until the OS signals that data is ready to be read.
+- **Properties:** Uses **I/O Multiplexing** to manage multiple clients within a **single process**.
+- **Efficiency:** Unlike `fork()`, they monitor an array/set of file descriptors. The process "sleeps" and consumes **zero CPU cycles** until the OS signals that data is ready to be read.
+- **Common Behavior:**
+    - **Broadcasting:** Messages sent by one client are relayed to all others (except the sender).
+    - **UX:** Non-blocking feel without the "busy-wait" overhead.
 
-- Summary:
-    - Dynamic array management with realloc() for scalable connections.
-    - Broadcasting: Messages sent by one client are relayed to all others.ss
-    - Non-blocking feel without the "busy-wait" overhead.
+#### Implementation Summary
+| Feature | **select()** | **poll()** |
+| :--- | :--- | :--- |
+| **Mechanism** | Uses **bitwise operations** (`FD_SET`, `FD_ISSET`) to manage connection states. | Uses **dynamic array management** with `realloc()` for scalable connections. |
+| **Pros** | Simple, standard, highly portable. | No fixed limit on connections (only system memory). |
 
-#### Terminal 1: Start Poll Server
+---
+
+#### Terminal 1: Start the Server (Choose one)
+
+**The Classic select()**
+```bash
+./Src/selectserver
+```
+
+**The Modern poll()**
 ```bash
 ./Src/pollserver
 ```
-(Listening on port 9034)
+(Both servers listen on port 9034)
 
 #### Terminal 2, 3, 4...: Connect multiple clients
-You can use telnet or netcat to simulate multiple users:
+You can use telnet or nc (netcat) to simulate multiple users:
+
 ```bash
 telnet localhost 9034
 ```
-or 
-
+or
 ```bash
 nc localhost 9034
 ```
@@ -110,18 +124,32 @@ Then you can try type in the terminal
 ```bash
 Sinu: Networking is cool!
 ```
-#### The result on terminal 1 should be
+
+#### The result on Terminal 1 (Server) should be
+
+selectserver
 ```bash
-pollserver: waiting for connections...
-pollserver: new connection from 127.0.0.1 on socket 4
-pollserver: recv from fd 4: Sinu: Networking is cool!
+selectserver: new connection from 127.0.0.1 on socket 4
+selectserver: new connection from 127.0.0.1 on socket 5
+selectserver: recv from fd 4: Sinu: Networking is cool!
 ```
-#### The result on terminal the other terminal should be
+
+pollserver
+
+```bash
+server: waiting for connections...
+server: new connection from 127.0.0.1 on socket 4
+server: new connection from 127.0.0.1 on socket 5
+server: recv from fd 4: Sinu: Networking is cool!
+```
+
+#### The result on other Client Terminals (Terminal 1, 2, 3, 4...) should be
+
 ```bash
 Sinu: Networking is cool!
 ```
 
-#### And if you wonder wWhy does my client start at Socket 4?
+### And if you wonder Why does my client start at Socket 4?
 In Unix-like systems, every new process starts with three default File Descriptors (FD):
 
     0 (stdin): Keyboard input.
@@ -133,3 +161,4 @@ When our server runs:
     FD 3 is assigned to the Listener Socket (the "Front Door").
     FD 4 is assigned to the First Client that connects.
     Subsequent clients will be assigned FD 5, 6, and so on.
+    

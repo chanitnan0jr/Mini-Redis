@@ -29,6 +29,9 @@ showip: $(SRC_DIR)/showip.c
 pollserver: $(SRC_DIR)/pollserver.c
 	$(CC) $(CFLAGS) $(SRC_DIR)/pollserver.c -o $(SRC_DIR)/pollserver
 
+selectserver: $(SRC_DIR)/selectserver.c
+	$(CC) $(CFLAGS) $(SRC_DIR)/selectserver.c -o $(SRC_DIR)/selectserver
+
 # 5. clean up compiled files
 clean:
-	rm -f $(SRC_DIR)/server $(SRC_DIR)/client $(SRC_DIR)/showip $(SRC_DIR)/listener $(SRC_DIR)/talker $(SRC_DIR)/pollserver
+	rm -f $(SRC_DIR)/server $(SRC_DIR)/client $(SRC_DIR)/showip $(SRC_DIR)/listener $(SRC_DIR)/talker $(SRC_DIR)/pollserver $(SRC_DIR)/selectserver
