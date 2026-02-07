@@ -2,6 +2,69 @@
 
 Learning to build network applications and a Mini-Redis clone using C, based on [Beej's Guide to Network Programming](https://beej.us/guide/bgnet/).
 
+## Data Encapsulation
+Beej explains that data is never sent "naked." It goes through a process called Encapsulation, which is like wrapping a letter inside multiple envelopes.
+
+When a packet is born, it gets wrapped in a Header by the first protocol, then wrapped again by the next protocol, and so on.
+
+- Step 1 (Application): Your data gets a protocol header (e.g., TFTP, HTTP).
+
+- Step 2 (Transport): That bundle gets a UDP or TCP header.
+
+- Step 3 (Internet): That bundle gets an IP header (addressing).
+
+- Step 4 (Hardware): Finally, it gets a Hardware header (e.g., Ethernet) to go out on the wire.
+
+Visual Structure: 
+```bash
+[ Ethernet Header [ IP Header [ TCP/UDP Header [ App(TFTP, HPPP) Header [ DATA ] ] ] ] ]
+```
+#### Receiving (Stripping): When the computer receives the packet, it does the reverse:
+- Hardware strips the Ethernet header.
+- Kernel strips the IP and UDP/TCP headers.
+- Program strips the Application header.
+- Finally, you are left with the Raw Data.
+
+#### The Layered Network Model (ISO/OSI vs. TCP/IP)
+
+Beej mentions two main models used to describe this structure.
+
+- ISO/OSI Model (7 Layers): The theoretical standard (Application, Presentation, Session, Transport, Network, Data Link, Physical). It is very detailed and often used in academic courses.
+
+- Unix/TCP/IP Model (4 Layers): The practical model used in real-world programming (Application, Host-to-Host Transport, Internet, Network Access).
+
+#### About application header layer
+here are common protocols and how they choose their Transport (Step 2):
+
+- TFTP (Trivial File Transfer Protocol):
+
+    - Transport: Uses UDP (Port 69).
+
+    - Characteristics: Very simple, sends data in blocks and waits for an ACK. It is insecure (no login), but great for learning UDP basics or flashing firmware on routers.
+
+- FTP (File Transfer Protocol):
+
+    - Transport: Uses TCP (Ports 20 & 21).
+
+    - Characteristics: Reliable but complex. It separates commands (Port 21) from data transfer (Port 20). Rarely used for new projects due to firewall issues.
+
+- HTTP (Hypertext Transfer Protocol):
+
+    - Transport: Uses TCP (Port 80).
+
+    - Characteristics: The foundation of the Web. It uses a text-based "Request-Response" model (similar to the Mini-Redis project you are building).
+
+- HTTPS (HTTP Secure):
+
+    - Transport: Uses TCP (Port 443).
+
+    - Characteristics: Same as HTTP but encrypted using TLS/SSL to prevent eavesdropping.
+
+#### Why do we use layers?
+- **Hardware Independence:** As a socket programmer, you don't need to know how the data is physically transmitted (whether it's via copper wire, fiber optics, satellite, or Wi-Fi).
+
+- **Abstraction:** The lower layers (Kernel and Hardware) handle the messy details. You just write code to talk to the socket, and the network stack handles the rest.
+
 ## Project Structure
 
 ```text
