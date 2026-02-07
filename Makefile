@@ -5,7 +5,7 @@ CFLAGS = -Wall -I./lib
 # 2. tell make where the source files are and what the targets are
 SRC_DIR = Src
 
-TARGETS = server client showip listener talker pollserver
+TARGETS = server client showip listener talker pollserver selectserver
 
 # 3. Default target
 all: $(TARGETS)
