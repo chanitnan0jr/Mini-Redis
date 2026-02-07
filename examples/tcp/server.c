@@ -98,19 +98,11 @@ int main(){
             if (getpeername(new_fd, (struct sockaddr *)&peer_addr, &peer_len) == -1) {
                 perror("getpeername");
             } else {
-                char peer_addr_str[INET6_ADDRSTRLEN];
-                inet_ntop(peer_addr.ss_family,
-                          (peer_addr.ss_family == AF_INET) ?
-                          (void *)&((struct sockaddr_in *)&peer_addr)->sin_addr :
-                          (void *)&((struct sockaddr_in6 *)&peer_addr)->sin6_addr,
-                          peer_addr_str, sizeof peer_addr_str);
                 //or use get_in_addr(struct sockaddr *sa) function from Beej's guide
-                /*
-                get_in_addr function example:
+                char peer_addr_str[INET6_ADDRSTRLEN];
                 inet_ntop(peer_addr.ss_family,
                           get_in_addr((struct sockaddr *)&peer_addr),
                           peer_addr_str, sizeof peer_addr_str);
-                */
                 printf("Client address: %s\n", peer_addr_str);
             }
             const char *msg = "Hello from Sinu server!\n";

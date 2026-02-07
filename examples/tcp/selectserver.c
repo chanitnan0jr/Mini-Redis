@@ -7,85 +7,13 @@
 
 /*
  * Convert socket to IP address string.
- * addr: struct sockaddr_in or struct sockaddr_in6
  */
-const char *inet_ntop2(void *addr, char *buf, size_t size, socklen_t addrlen)
-{
-    // Standard constants: Ensures buffers fit any IPv6/Port.
-    char host[NI_MAXHOST];
-    char service[NI_MAXSERV];
-
-    // Using fixed size (sizeof sockaddr_storage) or actual 'socklen_t addrlen' as an argument.
-    int s = getnameinfo((struct sockaddr *)addr, addrlen,
-                        host, sizeof(host),
-                        service, sizeof(service),
-                        NI_NUMERICHOST | NI_NUMERICSERV); // FAST: No DNS lookup (returns raw IP/Port)
-
-    if (s == 0) {
-        snprintf(buf, size, "%s", host); // Safe copy to user buffer
-        printf("Foreign node: %s, Port: %s\n", host, service);
-        return buf;
-    } else {
-        fprintf(stderr, "getnameinfo: %s\n", gai_strerror(s));
-        return NULL;
-    }
-}
+// (moved to network_lib.c)
 
 /*
  * Return a listening socket
  */
-int get_listener_socket(void)
-{
-    struct addrinfo hints, *ai, *p;
-    int yes=1;    // for setsockopt() SO_REUSEADDR, below
-    int rv;
-    int listener;
-
-    // get us a socket and bind it
-    memset(&hints, 0, sizeof hints);
-    hints.ai_family = AF_UNSPEC;
-    hints.ai_socktype = SOCK_STREAM;
-    hints.ai_flags = AI_PASSIVE;
-    if ((rv = getaddrinfo(NULL, PORT, &hints, &ai)) != 0) {
-        fprintf(stderr, "selectserver: %s\n", gai_strerror(rv));
-        exit(1);
-    }
-
-    for(p = ai; p != NULL; p = p->ai_next) {
-        listener = socket(p->ai_family, p->ai_socktype,
-                p->ai_protocol);
-        if (listener < 0) {
-            continue;
-        }
-
-        // lose the pesky "address already in use" error message
-        setsockopt(listener, SOL_SOCKET, SO_REUSEADDR, &yes,
-                sizeof(int));
-
-        if (bind(listener, p->ai_addr, p->ai_addrlen) < 0) {
-            close(listener);
-            continue;
-        }
-
-        break;
-    }
-
-    // if we got here, it means we didn't get bound
-    if (p == NULL) {
-        fprintf(stderr, "selectserver: failed to bind\n");
-        exit(2);
-    }
-
-    freeaddrinfo(ai); // all done with this
-
-    // listen
-    if (listen(listener, 10) == -1) {
-        perror("listen");
-        exit(3);
-    }
-
-    return listener;
-}
+// (moved to network_lib.c)
 
 /*
  * Add new incoming connections to the proper sets
@@ -182,7 +110,7 @@ int main(void)
     FD_ZERO(&master);    
     FD_ZERO(&read_fds);
 
-    listener = get_listener_socket();
+    listener = get_listener_socket(PORT);
 
     // Add the listener to the master set so select() monitors for new connections
     FD_SET(listener, &master);

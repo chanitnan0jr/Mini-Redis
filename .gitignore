@@ -1,0 +1,20 @@
+# Object files
+*.o
+
+# Binaries in examples
+examples/tcp/server
+examples/tcp/client
+examples/tcp/selectserver
+examples/tcp/pollserver
+examples/udp/listener
+examples/udp/talker
+examples/utils/showip
+examples/utils/pack_test
+
+# Miniredis artifacts
+miniredis/obj/
+miniredis/bin/
+miniredis/src/*.c
+
+# Hidden files (like .DS_Store)
+.DS_Store
