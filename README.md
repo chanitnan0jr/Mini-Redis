@@ -10,10 +10,14 @@ The concepts in this chapter directly apply to the Mini-Redis project:
 - Byte order → integer and bulk string length fields
 - Encapsulation → Redis protocol design
 
+### Compatibility & Requirements
+
+This project is written in C and uses POSIX-compliant libraries (e.g., `<sys/socket.h>`, `<poll.h>`, `<unistd.h>`). 
+It is designed to run on **Linux** or **macOS**. Windows users should use **WSL (Windows Subsystem for Linux)**.
 
 ## Introduction Chapter 1-6 (Basic)
 
-## Data Encapsulation
+### Data Encapsulation
 Beej explains that data is never sent "naked." It goes through a process called Encapsulation, which is like wrapping a letter inside multiple envelopes.
 
 When a packet is born, it gets wrapped in a Header by the first protocol, then wrapped again by the next protocol, and so on.
