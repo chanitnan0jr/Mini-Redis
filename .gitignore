@@ -14,7 +14,6 @@ examples/utils/pack_test
 # Miniredis artifacts
 miniredis/obj/
 miniredis/bin/
-miniredis/src/*.c
 
 # Hidden files (like .DS_Store)
 .DS_Store
